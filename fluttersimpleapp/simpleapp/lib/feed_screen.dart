@@ -29,20 +29,41 @@ class _FeedScreenState extends State<FeedScreen> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Feed'),
-      ),
-      body: ListView.builder(
-        itemCount: posts.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(posts[index]['Content']),
-          );
-        },
-      ),
-    );
-  }
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      title: Text('Feed'),
+    ),
+    body: ListView.builder(
+      itemCount: posts.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          title: Text(posts[index]['Content']),
+          trailing: PopupMenuButton(
+            itemBuilder: (BuildContext context) {
+              return <PopupMenuEntry>[
+                PopupMenuItem(
+                  value: 'option1',
+                  child: Text('Option 1'),
+                ),
+                PopupMenuItem(
+                  value: 'option2',
+                  child: Text('Option 2'),
+                ),
+              ];
+            },
+            onSelected: (value) {
+              if (value == 'option1') {
+                // Handle option 1
+              } else if (value == 'option2') {
+                // Handle option 2
+              }
+            },
+          ),
+        );
+      },
+    ),
+  );
+}
 }
