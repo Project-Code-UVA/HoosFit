@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'add_post_screen.dart';
 import 'feed_screen.dart'; // Import the FeedScreen
+import 'Login_Page.dart';
 
 class HomeScreen extends StatelessWidget {
   @override
@@ -33,6 +34,18 @@ class HomeScreen extends StatelessWidget {
               },
               child: Text('View Feed'),
             ),
+                        SizedBox(height: 16.0), // Changed code to add sign out button starts here
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginPage()), // How to get to login screen
+                );
+              },
+              child: const Text(
+                'Sign Out', // Text for button
+                ),
+                  ),
           ],
         ),
       ),
