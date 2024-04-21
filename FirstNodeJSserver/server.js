@@ -1,7 +1,8 @@
 const express = require('express');
 const app = express();
 const port = 3000;
-
+const multer  = require('multer');
+const upload = multer({ dest: 'uploads/' });
 app.use(express.json());
 
 
@@ -61,7 +62,17 @@ app.get('/api/posts', async (req, res) => {
   });
   
   
-  
+  app.post('/api/upload', upload.single('image'), async (req, res) => {
+    try {
+      const imageBuffer = req.file.buffer; // Get the image data as a buffer
+      // Store the imageBuffer in the database using SQL queries or ORM methods
+      // Example SQL query: INSERT INTO Posts (Content, Image, CreatedAt) VALUES (?, ?, GETDATE())
+      res.status(201).send('Image uploaded successfully');
+    } catch (error) {
+      console.error('Error uploading image:', error.message);
+      res.status(500).send('Internal Server Error');
+    }
+  });
   
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
