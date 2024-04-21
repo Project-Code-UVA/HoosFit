@@ -82,10 +82,7 @@ try {
 
 Future<void> _pickImage() async {
   final picker = ImagePicker();
-  final pickedImage = await picker.getImage(source: ImageSource.gallery);
-
-
-
+  final pickedImage = await picker.pickImage(source: ImageSource.gallery);
 
   if (pickedImage != null) {
     setState(() {
@@ -93,6 +90,7 @@ Future<void> _pickImage() async {
     });
   }
 }
+
 
 
 
