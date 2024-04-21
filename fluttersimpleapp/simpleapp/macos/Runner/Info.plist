@@ -28,5 +28,22 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <true/>
+    </dict>
+
+    <!-- Permissions for accessing photos -->
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Allow access to your photo library</string>
+
+    <!-- Permissions for accessing camera -->
+    <key>NSCameraUsageDescription</key>
+    <string>Allow access to use the camera</string>
+
+    <!-- Permissions for accessing location -->
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Allow access to your location</string>
 </dict>
 </plist>
