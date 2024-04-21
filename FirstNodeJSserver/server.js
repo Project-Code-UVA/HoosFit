@@ -1,12 +1,12 @@
 const express = require('express');
 const app = express();
 const port = 3000;
-const multer  = require('multer');
+const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
 app.use(express.json());
 
-
 const sql = require('mssql');
+const fs = require('fs');
 
 const config = {
   user: 'allaccess',
@@ -14,7 +14,7 @@ const config = {
   server: 'hoosfit-server.database.windows.net',
   database: 'HoosFit',
   options: {
-    encrypt: true, 
+    encrypt: true,
   },
 };
 
@@ -27,53 +27,47 @@ async function connectToDatabase() {
   }
 }
 
-
 connectToDatabase();
 
+app.post('/api/upload', upload.single('image'), async (req, res) => {
+  try {
+    const content = req.body.content;
+
+    // Get the file path where the image is stored on the server
+    const imagePath = req.file.path;
+
+    const pool = await sql.connect(config);
+    const request = pool.request();
+
+    // Read the image file as binary data
+    const imageBuffer = fs.readFileSync(imagePath);
+
+    // Insert the content and image path into the database
+    request.input('content', sql.NVarChar(sql.MAX), content);
+    request.input('image', sql.VarBinary, imageBuffer);
+    request.query('INSERT INTO dbo.Posts (Content, ImagePath, CreatedAt) VALUES (@content, @image, GETDATE());');
+
+    res.status(201).send('Image uploaded and post created successfully');
+  } catch (error) {
+    console.error('Error uploading image and creating post:', error.message);
+    res.status(500).send('Internal Server Error');
+  }
+});
 
 app.get('/api/posts', async (req, res) => {
-    try {
-      const result = await sql.query('SELECT * FROM dbo.Posts');
-      res.json(result.recordset);
-    } catch (error) {
-      console.error('Error fetching posts:', error.message);
-      res.status(500).send('Internal Server Error');
-    }
-  });
-  
-  
-  app.post('/api/posts', async (req, res) => {
-    const { Content } = req.body;
-  
-    if (!Content) {
-      return res.status(400).send('Content is required');
-    }
-  
-    try {
-      const result = await sql.query`
-        INSERT INTO dbo.Posts (Content, CreatedAt)
-        VALUES (${Content}, GETDATE());
-      `;
-      res.status(201).json(result.recordset[0]);
-    } catch (error) {
-      console.error('Error adding post:', error.message);
-      res.status(500).send('Internal Server Error');
-    }
-  });
-  
-  
-  app.post('/api/upload', upload.single('image'), async (req, res) => {
-    try {
-      const imageBuffer = req.file.buffer; // Get the image data as a buffer
-      // Store the imageBuffer in the database using SQL queries or ORM methods
-      // Example SQL query: INSERT INTO Posts (Content, Image, CreatedAt) VALUES (?, ?, GETDATE())
-      res.status(201).send('Image uploaded successfully');
-    } catch (error) {
-      console.error('Error uploading image:', error.message);
-      res.status(500).send('Internal Server Error');
-    }
-  });
-  
+  try {
+    const pool = await sql.connect(config);
+    const result = await pool
+      .request()
+      .query('SELECT * FROM dbo.Posts ORDER BY CreatedAt DESC');
+
+    res.json(result.recordset);
+  } catch (error) {
+    console.error('Error fetching posts:', error.message);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

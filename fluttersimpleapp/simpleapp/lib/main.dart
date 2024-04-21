@@ -3,21 +3,23 @@ import 'package:flutter/material.dart';
 import 'package:simpleapp/Login_Page.dart';
 import 'home_screen.dart';
 
+
 void main() {
-  runApp(MyApp());
+ runApp(MyApp());
 }
 
+
 class MyApp extends StatelessWidget {
-  @override
-  
+ @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'HoosFit',
-      theme: ThemeData(
-        
-        primarySwatch: Colors.blue,
-      ),
-      home: LoginPage(),
-    );
-  }
+   return MaterialApp(
+     title: 'HoosFit',
+     theme: ThemeData(
+      
+       fontFamily: 'Teko',
+       primaryColor: Color(0xFFE57200),
+     ),
+     home: LoginPage(),
+   );
+ }
 }

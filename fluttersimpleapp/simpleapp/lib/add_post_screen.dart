@@ -1,11 +1,7 @@
-import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:mime/mime.dart';
-import 'package:http_parser/http_parser.dart';
 
 class AddPostScreen extends StatefulWidget {
   @override
@@ -16,49 +12,6 @@ class _AddPostScreenState extends State<AddPostScreen> {
   final TextEditingController _contentController = TextEditingController();
   File? _imageFile;
 
-  Future<void> _addPost(String content) async {
-    final url = Uri.parse('http://172.26.72.107:3000/api/posts');
-    final headers = {'Content-Type': 'multipart/form-data'};
-    final request = http.MultipartRequest('POST', url);
-    request.headers.addAll(headers);
-    request.fields['Content'] = content;
-
-final mimeType = lookupMimeType(_imageFile!.path, headerBytes: [0xFF, 0xD8]);
-if (mimeType != null) {
-  final mimeTypeParts = mimeType.split('/');
-  if (mimeTypeParts.length == 2) {
-    final file = await http.MultipartFile.fromPath(
-      'image',
-      _imageFile!.path,
-      contentType: MediaType(mimeTypeParts[0], mimeTypeParts[1]),
-    );
-    request.files.add(file);
-  } else {
-    print('Invalid MIME type format');
-  }
-} else {
-  print('Failed to determine MIME type');
-}
-
-    try {
-      final streamedResponse = await request.send();
-      final response = await http.Response.fromStream(streamedResponse);
-      print('Response status code: ${response.statusCode}');
-      print('Response body: ${response.body}');
-
-      if (response.statusCode == 201) {
-        print('Post added successfully');
-        // Handle success, navigate to another screen, etc.
-      } else {
-        print('Failed to add post');
-        // Handle failure
-      }
-    } catch (e) {
-      print('Error adding post: $e');
-      // Handle error
-    }
-  }
-
   Future<void> _pickImage() async {
     final picker = ImagePicker();
     final pickedImage = await picker.pickImage(source: ImageSource.gallery);
@@ -67,6 +20,41 @@ if (mimeType != null) {
       setState(() {
         _imageFile = File(pickedImage.path);
       });
+    }
+  }
+
+  Future<void> _addPost(String? content, File? imageFile) async {
+    try {
+      if (content == null || content.isEmpty) {
+        print('Content cannot be empty');
+        return;
+      }
+
+      final dio = Dio();
+      final formData = FormData.fromMap({
+        'content': content,
+        'image': imageFile != null ? await MultipartFile.fromFile(imageFile.path) : null,
+      });
+
+      final response = await dio.post(
+        'http://172.26.72.107:3000/api/upload', // Replace with your server URL
+        data: formData,
+        options: Options(headers: {'Content-Type': 'multipart/form-data'}),
+      );
+
+      if (response.statusCode == 201) {
+        print('Post added successfully');
+        // Handle success, navigate to another screen, etc.
+      } else {
+        print('Failed to add post');
+        // Handle failure
+      }
+    } on DioError catch (e) {
+      print('DioError adding post: $e');
+      // Handle Dio error
+    } catch (e) {
+      print('Error adding post: $e');
+      // Handle other errors
     }
   }
 
@@ -103,10 +91,9 @@ if (mimeType != null) {
             ElevatedButton(
               onPressed: () {
                 final content = _contentController.text;
-                if (content.isNotEmpty) {
-                  _addPost(content);
-                  Navigator.pop(context); // Close the screen after adding the post
-                }
+                final imageFile = _imageFile;
+                _addPost(content, imageFile);
+                Navigator.pop(context); // Close the screen after adding the post
               },
               child: Text('Add Post'),
             ),
@@ -114,5 +101,11 @@ if (mimeType != null) {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _contentController.dispose();
+    super.dispose();
   }
 }
