@@ -1,0 +1,13 @@
+flutter_native_splash:
+  color: "#232D4B"
+  color_dark: "#FFFFFF"
+  image: web/icons/hoosfit.png
+  image_dark: web/icons/hoosfit.png
+
+  android_12:
+    color: "#232D4B"
+    color_dark: "#FFFFFF"
+    image: web/icons/hoosfit.png
+    image_dark: web/icons/hoosfit.png
+
+  web: false
