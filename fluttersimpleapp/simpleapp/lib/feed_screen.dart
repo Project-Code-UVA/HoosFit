@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
@@ -45,28 +46,49 @@ class _FeedScreenState extends State<FeedScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(), // Use the custom app bar
+      appBar: buildAppBar(),
       body: Container(
-        color: Color(0xFF232D4B), // UVA Blue for background color
+        color: Color(0xFF232D4B),
         child: posts.isEmpty
-            ? Center(child: CircularProgressIndicator()) // Show loading indicator while fetching posts
+            ? Center(child: CircularProgressIndicator())
             : ListView.builder(
                 itemCount: posts.length,
                 itemBuilder: (context, index) {
                   return ListTile(
                     title: Text(
                       posts[index]['Content'] ?? 'No content',
-                      style: TextStyle(color: Color(0xFFC8CBD2)), // UVA Blue 25% for post text color
+                      style: TextStyle(color: Color(0xFFC8CBD2)),
                     ),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        SizedBox(width: 10), // Adjust the spacing between text and image
-                        Image.memory(
-                          base64Decode(posts[index]['Image']), // Decode base64 string to Uint8List
-                          width: 50,
-                          height: 50,
-                          fit: BoxFit.cover,
+                        SizedBox(width: 10),
+                        FutureBuilder<Uint8List?>(
+                          future: _loadImage(posts[index]['Image']),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return Container(
+                                width: 50,
+                                height: 50,
+                                color: Colors.grey, // Placeholder color
+                                child: Center(child: Text('Image\nNot\nFound', textAlign: TextAlign.center)),
+                              );
+                            } else if (snapshot.hasError || snapshot.data == null) {
+                              return Container(
+                                width: 50,
+                                height: 50,
+                                color: Colors.grey, // Placeholder color
+                                child: Center(child: Text('Error\nLoading\nImage', textAlign: TextAlign.center)),
+                              );
+                            } else {
+                              return Image.memory(
+                                snapshot.data!,
+                                width: 50,
+                                height: 50,
+                                fit: BoxFit.cover,
+                              );
+                            }
+                          },
                         ),
                       ],
                     ),
@@ -77,17 +99,31 @@ class _FeedScreenState extends State<FeedScreen> {
     );
   }
 
+  Future<Uint8List?> _loadImage(String? base64Image) async {
+    if (base64Image != null && base64Image.isNotEmpty) {
+      try {
+        // Simulate a 20-second delay before loading the image
+        await Future.delayed(Duration(seconds: 10));
+        return base64Decode(base64Image);
+      } catch (e) {
+        print('Error decoding image: $e');
+      }
+    }
+    // Return null if base64Image is null or empty
+    return null;
+  }
+
   PreferredSizeWidget? buildAppBar() {
     return AppBar(
       title: Text(
         'Feed',
         style: TextStyle(
-          color: Color(0xFFF9DCBF), // UVA Orange 25% for app bar text color
-          fontSize: 18.0 * 1.5, // Set app bar font size to 18 * 1.5
+          color: Color(0xFFF9DCBF),
+          fontSize: 18.0 * 1.5,
         ),
       ),
-      backgroundColor: Color(0xFFE57200), // UVA Orange for app bar background color
-      iconTheme: IconThemeData(color: Color(0xFFF9DCBF)), // Set arrow icon color to UVA Orange 25%
+      backgroundColor: Color(0xFFE57200),
+      iconTheme: IconThemeData(color: Color(0xFFF9DCBF)),
     );
   }
 }

@@ -1,6 +1,12 @@
 PODS:
+  - device_info_plus (0.0.1):
+    - Flutter
   - Flutter (1.0.0)
   - flutter_native_splash (0.0.1):
+    - Flutter
+  - health (1.0.4):
+    - Flutter
+  - health_data_plugin (0.0.1):
     - Flutter
   - image_picker_ios (0.0.1):
     - Flutter
@@ -9,27 +15,39 @@ PODS:
     - FlutterMacOS
 
 DEPENDENCIES:
+  - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
   - Flutter (from `Flutter`)
   - flutter_native_splash (from `.symlinks/plugins/flutter_native_splash/ios`)
+  - health (from `.symlinks/plugins/health/ios`)
+  - health_data_plugin (from `.symlinks/plugins/health_data_plugin/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
 
 EXTERNAL SOURCES:
+  device_info_plus:
+    :path: ".symlinks/plugins/device_info_plus/ios"
   Flutter:
     :path: Flutter
   flutter_native_splash:
     :path: ".symlinks/plugins/flutter_native_splash/ios"
+  health:
+    :path: ".symlinks/plugins/health/ios"
+  health_data_plugin:
+    :path: ".symlinks/plugins/health_data_plugin/ios"
   image_picker_ios:
     :path: ".symlinks/plugins/image_picker_ios/ios"
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
 
 SPEC CHECKSUMS:
-  Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  device_info_plus: e5c5da33f982a436e103237c0c85f9031142abed
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_native_splash: 52501b97d1c0a5f898d687f1646226c1f93c56ef
+  health: e7a5807e45ec58fe6b89a730c97abc6caafe94a0
+  health_data_plugin: 6291eb126395ab63e8d37ddbea48672d47a93757
   image_picker_ios: 99dfe1854b4fa34d0364e74a78448a0151025425
   path_provider_foundation: 3784922295ac71e43754bd15e0653ccfd36a147c
 
-PODFILE CHECKSUM: 70d9d25280d0dd177a5f637cdb0f0b0b12c6a189
+PODFILE CHECKSUM: 819463e6a0290f5a72f145ba7cde16e8b6ef0796
 
 COCOAPODS: 1.14.3

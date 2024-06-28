@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:simpleapp/Login_Page.dart';
 import 'home_screen.dart';
+import 'health.dart';
 
 
 void main() {
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
        fontFamily: 'Teko',
        primaryColor: Color(0xFFE57200),
      ),
-     home: LoginPage(),
+     home: HealthDataPage(),
    );
  }
 }
