@@ -1,9 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:simpleapp/Post_Service.dart';
 
-
+//
 class AddPostScreen extends StatefulWidget {
  @override
  _AddPostScreenState createState() => _AddPostScreenState();
@@ -12,6 +13,7 @@ class AddPostScreen extends StatefulWidget {
 
 class _AddPostScreenState extends State<AddPostScreen> {
  final TextEditingController _contentController = TextEditingController();
+ final PostService _postService = PostService();
  File? _imageFile;
 
 
@@ -27,44 +29,23 @@ class _AddPostScreenState extends State<AddPostScreen> {
    }
  }
 
-
- Future<void> _addPost(String? content, File? imageFile) async {
-   try {
-     if (content == null || content.isEmpty) {
-       print('Content cannot be empty');
-       return;
-     }
-
-
-     final dio = Dio();
-     final formData = FormData.fromMap({
-       'content': content,
-       'image': imageFile != null ? await MultipartFile.fromFile(imageFile.path) : null,
-     });
-
-
-     final response = await dio.post(
-       'http://172.26.72.107:3000/api/upload', // Replace with your server URL
-       data: formData,
-       options: Options(headers: {'Content-Type': 'multipart/form-data'}),
-     );
-
-
-     if (response.statusCode == 201) {
-       print('Post added successfully');
-       // Handle success, navigate to another screen, etc.
-     } else {
-       print('Failed to add post');
-       // Handle failure
-     }
-   } on DioError catch (e) {
-     print('DioError adding post: $e');
-     // Handle Dio error
-   } catch (e) {
-     print('Error adding post: $e');
-     // Handle other errors
+ Future<void> _addPost(String postText) async {
+   // Get the current user ID
+   User? user = FirebaseAuth.instance.currentUser;
+   if (user == null) {
+     print("No user logged in.");
+     return;
    }
- }
+   String userId = user.uid;
+   try{
+    await _postService.createPost(postText, userId);
+   }catch(e){
+    print("error while creating post: $e");
+   }
+    if (mounted) {
+       Navigator.pop(context);
+    }
+   }
 
 
  @override
@@ -129,10 +110,10 @@ class _AddPostScreenState extends State<AddPostScreen> {
            SizedBox(height: 16),
            ElevatedButton(
              onPressed: () {
-               final content = _contentController.text;
-               if (content.isNotEmpty) {
-                 _addPost(content, _imageFile);
-                 Navigator.pop(context); // Close the screen after adding the post
+               final postText = _contentController.text;
+               if (postText.isNotEmpty) {
+                 _addPost(postText);
+                  
                }
              },
              style: ButtonStyle(
@@ -147,9 +128,5 @@ class _AddPostScreenState extends State<AddPostScreen> {
    ),
  );
 }
+
 }
-
-
-
-
-
