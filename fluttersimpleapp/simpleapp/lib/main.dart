@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
        fontFamily: 'Teko',
        primaryColor: Color(0xFFE57200),
      ),
-     home: HealthDataPage(),
+     home: LoginPage(),
    );
  }
 }
